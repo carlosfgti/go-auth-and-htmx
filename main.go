@@ -13,6 +13,8 @@ func main() {
 
 	router.HandleFunc("/", handleIndexRequest).Methods("GET", "OPTIONS")
 	router.HandleFunc("/hello", handleFunc).Methods("GET", "OPTIONS")
+	router.HandleFunc("/login", loginPage).Methods("GET", "OPTIONS")
+	router.HandleFunc("/login", loginRequest).Methods("POST", "OPTIONS")
 
 	// Start the HTTPS server
 	server := &http.Server{
@@ -36,4 +38,25 @@ func handleIndexRequest(w http.ResponseWriter, r *http.Request) {
 
 func handleFunc(w http.ResponseWriter, _ *http.Request) {
 	w.Write([]byte("Hello from the server!"))
+}
+
+func loginPage(w http.ResponseWriter, r *http.Request) {
+	tmpl, err := template.ParseFiles("pages/login.html")
+	if err != nil {
+		http.Error(w, "Could not parse template", http.StatusInternalServerError)
+		return
+	}
+	tmpl.Execute(w, nil)
+}
+
+func loginRequest(w http.ResponseWriter, r *http.Request) {
+	username := r.FormValue("username")
+	password := r.FormValue("password")
+
+	// Basic authentication logic (replace with your own logic)
+	if username == "user" && password == "password" {
+		w.Write([]byte("<p>Login successful! Welcome, " + username + ".</p>"))
+	} else {
+		w.Write([]byte("<p>Invalid username or password. Please try again.</p>"))
+	}
 }
